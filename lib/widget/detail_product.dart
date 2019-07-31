@@ -29,6 +29,12 @@ class DetailProductState extends State<DetailProduct>{
         ),
         backgroundColor: Colors.white,
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black87,
+        child: Icon(Icons.shopping_basket), onPressed: (){
+         _optionChartBottomSheet(context, widget.post);
+        },
+      ),
       body: ListView(
         children:<Widget>[
          Column( // top image
@@ -105,9 +111,25 @@ class DetailProductState extends State<DetailProduct>{
 
           ],
         ),
-        Padding(padding:EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8), child:Column(
+        Padding(padding:EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
+         child:Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("AVAILABLE SIZE")
+            Center(child:Padding(padding:EdgeInsets.only(bottom: 16) ,child:Text("AVAILABLE SIZE", textAlign: TextAlign.center,))),
+            Row(
+              children: <Widget>[
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 6", style: TextStyle(color: Colors.black, fontSize: 16))),
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 7", style: TextStyle(color: Colors.black, fontSize: 16))),
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 8", style: TextStyle(color: Colors.black, fontSize: 16))),
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 9", style: TextStyle(color: Colors.black, fontSize: 16))),
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 9.5", style: TextStyle(color: Colors.black, fontSize: 16))),
+                Padding(padding:EdgeInsets.only(right: 16), child:Text("US 10", style: TextStyle(color: Colors.black, fontSize: 16))),
+
+               
+              ],
+            ),
+            Padding(padding:EdgeInsets.only(top: 16, bottom: 8), child:Text("DESCRIPTION")),
+            Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book")
           ],
         ))
 
@@ -117,6 +139,37 @@ class DetailProductState extends State<DetailProduct>{
   }
 
 }
+
+void _optionChartBottomSheet(context, Post post){
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc){
+        return Container(
+          child: Padding(padding:EdgeInsets.all(16), child:Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                  child:Image(
+                    image: AssetImage(post.images.assets[0]),
+                    width: 130,
+                    height: 130,
+                   ),
+                   flex: 1,
+                  ),
+                  Expanded(
+                  child:Text(post.title, style: TextStyle(fontSize: 20)),
+                  flex: 1,
+                  )
+                ],
+              )
+            ],
+          )),
+        );
+      });
+}
+
 
 class ImagePager extends StatelessWidget{
   final String image;
@@ -202,3 +255,5 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 }
+
+
