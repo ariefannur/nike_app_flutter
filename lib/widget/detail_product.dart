@@ -17,6 +17,7 @@ class DetailProduct extends StatefulWidget{
 }
 
 class DetailProductState extends State<DetailProduct>{
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,36 +139,199 @@ class DetailProductState extends State<DetailProduct>{
     );
   }
 
-}
-
-void _optionChartBottomSheet(context, Post post){
+  void _optionChartBottomSheet(context, Post post){
+  
     showModalBottomSheet(
       context: context,
       builder: (BuildContext bc){
-        return Container(
-          child: Padding(padding:EdgeInsets.all(16), child:Column(
+        return ModalContainer(post: post);
+      });
+}
+
+}
+
+class ModalContainer extends StatefulWidget{
+  
+  final Post post;
+  ModalContainer({this.post});
+
+  @override
+  State<StatefulWidget> createState() => ModalContainerState();
+
+}
+
+class ModalContainerState extends State<ModalContainer> with TickerProviderStateMixin{
+  int selectPosition = 5;
+  AnimationController controller;
+  Animation<double> sizeAnimation;
+  Animation<double> sizeAnimationHeight;
+  int width = 0;
+  bool animationStart= false;
+
+  @override
+  void initState() {
+    
+    super.initState();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: !animationStart ? MediaQuery.of(context).size.width : sizeAnimation.value,
+        height: !animationStart ? 500: sizeAnimationHeight.value,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+          color: Colors.white
+        ),
+          child: Padding(padding:EdgeInsets.only(left:8, right: 10, top:16, bottom:16), 
+          child:Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
                   child:Image(
-                    image: AssetImage(post.images.assets[0]),
-                    width: 130,
-                    height: 130,
+                    image: AssetImage(widget.post.images.assets[0]),
+                    width: sizeAnimation == null ? 150 : sizeAnimation.value,
+                    height: 150,
                    ),
                    flex: 1,
                   ),
                   Expanded(
-                  child:Text(post.title, style: TextStyle(fontSize: 20)),
+                  child:Text(widget.post.title, style: TextStyle(fontSize: 20)),
                   flex: 1,
                   )
                 ],
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 4, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children:<Widget>[
+                    Padding(padding:EdgeInsets.only(right:10), child:Icon(Icons.unfold_more, color: Colors.black38)),
+                    Text("Select Size ", style: TextStyle(fontSize: 16, color: Colors.black38),)
+                  ]
+                )
+              ),
+              Container(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: (){
+                        setState(() => selectPosition = 0);
+                      },
+                      child:
+                      SizeContainer(text: "US 6", isSelect: selectPosition == 0, position: 0)
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        setState(() => selectPosition = 1);
+                      },
+                    child:SizeContainer(text: "US 7", isSelect: selectPosition == 1, position: 1)
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        setState(() => selectPosition = 2);
+                      },
+                    child:SizeContainer(text: "US 8", isSelect: selectPosition == 2, position: 2)
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        setState(() => selectPosition = 3);
+                      },
+                    child:SizeContainer(text: "US 9", isSelect: selectPosition == 3, position: 3)
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        setState(() => selectPosition = 4);
+                      },
+                    child:SizeContainer(text: "US 9", isSelect: selectPosition == 4, position: 4)
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(top: 30),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  color: selectPosition < 5 ? Colors.black : Colors.white
+                ),
+                child: 
+                  GestureDetector(
+                    onTap: (){
+                      print("click anim");
+                      setState(()=> animationStart = true);
+                      width = 300;
+                        controller =  AnimationController(duration: Duration(milliseconds: 1000), vsync: this);
+                      closeAnimation();
+                    },
+                    child:Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.shopping_basket, color: selectPosition < 5 ? Colors.white : Colors.black38,),
+                        Padding(padding: EdgeInsets.only(left: 8),child:Text("Add to Chart", style:TextStyle(color: selectPosition < 5 ? Colors.white : Colors.black38)))
+                      ],
+                    ),
+                  )
               )
             ],
           )),
         );
+  }
+
+  void closeAnimation(){
+    
+    final Animation curve =CurvedAnimation(parent: controller, curve: Curves.easeIn);
+    sizeAnimation = Tween<double>(begin: width.toDouble(), end: 150).animate(curve);
+    sizeAnimationHeight = Tween<double>(begin: 500, end: 150).animate(curve);
+    sizeAnimation.addListener((){
+      setState(() {
+          print("animation "+sizeAnimation.value.toString());
+          
       });
+    });
+
+    controller.forward();
+    
+  }
+
+}
+
+
+
+class SizeContainer extends StatefulWidget{
+  final String text;
+  final bool isSelect;
+  final int position;
+  SizeContainer({this.text, this.isSelect, this.position});
+  @override
+  State<StatefulWidget> createState() => SizeContainerState();
+
+}
+
+class SizeContainerState extends State<SizeContainer>{
+  
+  @override
+  Widget build(BuildContext context) {
+    return 
+      Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        color: widget.isSelect ? Colors.black : Colors.white
+      ),
+      child: Text(widget.text, style: TextStyle(color: widget.isSelect ? Colors.white : Colors.black, fontSize: 16)),
+    );
+  }
+
 }
 
 
